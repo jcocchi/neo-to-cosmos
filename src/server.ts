@@ -27,7 +27,6 @@ const migrateData = async () => {
     await handleRestart();
     await cosmos.createCollectionIfNeeded();
 
-    await distributeLoad();
     await createVertexes();
     await createEdges();
 };
@@ -41,38 +40,17 @@ const handleRestart = async () => {
     }
 };
 
-let startNodeIndex = 0,
-    startRelationshipIndex = 0,
-    endNodeIndex = 0,
-    endRelationshipIndex = 0;
-
-const distributeLoad = async () => {
-    const totalNodes = await neo.getTotalNodes();
-    const totalRelationships = await neo.getTotalRelationships();
-
-    logger.info(`Nodes = ${totalNodes}, Relationships = ${totalRelationships}`);
-
-    startNodeIndex = Math.floor(totalNodes / args.total) * args.instance;
-    startRelationshipIndex = Math.floor(totalRelationships / args.total) * args.instance;
-
-    endNodeIndex = Math.ceil(totalNodes / args.total) * (args.instance + 1);
-    endRelationshipIndex = Math.ceil(totalRelationships / args.total) * (args.instance + 1);
-
-    logger.info(`startNodeIndex = ${startNodeIndex}, startRelationshipIndex = ${startRelationshipIndex}`);
-    logger.info(`endNodeIndex = ${endNodeIndex}, endRelationshipIndex = ${endRelationshipIndex}`);
-};
-
 const nodeIndexKey = `nodeIndex_${args.instance}`;
 const createVertexes = async () => {
     const indexString = await cache.get(nodeIndexKey);
-    let index = indexString ? Number.parseInt(indexString) : startNodeIndex;
+    let index = indexString ? Number.parseInt(indexString) : 0;
     let nodes: Neo4j.Node[] = [];
 
     while (true) {
         logger.info(`Node: ${index}`);
 
         nodes = await neo.getNodes(index);
-        if (nodes.length === 0 || index > endNodeIndex)
+        if (nodes.length === 0)
             break;
 
         const documentVertices = nodes.map((node: Neo4j.Node) => toDocumentDBVertex(node));
@@ -122,14 +100,14 @@ const addPropertyValue = (property: any[], propertyValue: any) => {
 const relationshipIndexKey = `relationshipIndex_${args.instance}`;
 const createEdges = async () => {
     const indexString = await cache.get(relationshipIndexKey);
-    let index = indexString ? Number.parseInt(indexString) : startRelationshipIndex;
+    let index = indexString ? Number.parseInt(indexString) : 0;
     let relationships = [];
 
     while (true) {
         logger.info(`Relationship: ${index}`);
 
         relationships = await neo.getRelationships(index);
-        if (relationships.length === 0 || index > endRelationshipIndex)
+        if (relationships.length === 0)
             break;
 
         const documentEdges = relationships.map((relationship: any) => toDocumentDBEdge(relationship));

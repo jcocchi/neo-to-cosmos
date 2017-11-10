@@ -14,18 +14,6 @@ export default () => {
             nargs: 0,
             help: "Restarts data transfer by deleting Cosmos DB collection and flushing Redis cache"
         });
-    argsParser.addArgument(
-        ["-t", "--total"], {
-            defaultValue: 1,
-            type: "int",
-            help: "Total number of instances in case of distributed load"
-        });
-    argsParser.addArgument(
-        ["-i", "--instance"], {
-            defaultValue: 0,
-            type: "int",
-            help: "Instance ID in case of distributed load"
-        });
 
     return argsParser.parseArgs();
 };

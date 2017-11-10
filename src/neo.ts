@@ -10,16 +10,6 @@ export default class Neo {
         this.logger = logger;
     }
 
-    getTotalNodes = async () => {
-        return await this.executeCypher("MATCH (n) RETURN COUNT(n)",
-            records => records[0].get(0));
-    }
-
-    getTotalRelationships = async () => {
-        return await this.executeCypher("MATCH (a)-[r]->(b) RETURN COUNT(r)",
-            records => records[0].get(0));
-    }
-
     getNodes = async (index: number) => {
         const nodeQuery = `MATCH (n) RETURN n ORDER BY ID(n) SKIP ${index} LIMIT ${this.config.pageSize}`;
         return await this.executeCypher(nodeQuery,
