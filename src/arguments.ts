@@ -6,7 +6,8 @@ export default () => {
 
     argsParser.addArgument(
         ["-c", "--config"], {
-            defaultValue: "../config.json",
+            // TODO: fix this, used to be ../config.json but fails in typescript run bc .js is nested in extra dist folder
+            defaultValue: "../../config.json",
             help: "Provide path to config.json file"
         });
     argsParser.addArgument(

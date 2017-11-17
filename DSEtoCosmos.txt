@@ -1,0 +1,34 @@
+// DSE EXAMPLE
+{
+    "id":{      // Our id is just these three concatenated
+        "~label":"label_name",
+        "community_id":1234567890,
+        "member_id":01
+    },
+    "label":"label_name",
+    "type":"vertex",        // We don't need a type label in Cosmos, only verticies are labeled with _isEdge = true
+    "properties":{      // We don't need a properties object in Cosmos, just list each one directly
+        "prop_name":[{
+            "id":{
+                "~label":"prop_name",       // This is a copy of the prop name object, we don't need this info again in Cosmos
+                "~out_vertex":{     // This is just a copy of the vertex id, we don't need this info again in Cosmos
+                    "~label":"label_name",
+                    "community_id":1234567890,
+                    "member_id":01
+                },
+                "~local_id":"00000000-0000-1020-0000-000000000000"      // What is this local id from?
+            },
+            "value":"prop_value"
+        }]
+    }
+}
+
+// COSMOS TRANSFORMATION
+{
+    "id":"label_name123456789001",
+    "label":"contact",
+    "prop_name":[{
+        "id":"random guid",     // Should this be derived from the DSE prop id somehow like the document id or is a random guid acceptable?
+        "_value":"prop_value"
+    }]
+}

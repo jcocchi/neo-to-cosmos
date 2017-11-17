@@ -1,3 +1,4 @@
+require('dotenv').load()
 import { LoggerInstance } from "winston";
 import { Client } from "documentdb-typescript";
 import { promisifyAll } from "bluebird";
@@ -17,10 +18,10 @@ export default class Cosmos {
         this.config = config;
         this.logger = logger;
 
-        this.databaseLink = `dbs/${config.cosmosDB.database}`;
-        this.collectionLink = `${this.databaseLink}/colls/${config.cosmosDB.collection}`;
+        this.databaseLink = `dbs/${process.env.COSMOS_DB_NAME}`;
+        this.collectionLink = `${this.databaseLink}/colls/${process.env.COSMOS_COLLECTION}`;
 
-        this.client = new Client(config.cosmosDB.endpoint, config.cosmosDB.authKey);
+        this.client = new Client(process.env.COSMOS_ENDPOINT, process.env.COSMOS_KEY);
         this.client.consistencyLevel = "Eventual";
     }
 
@@ -32,10 +33,11 @@ export default class Cosmos {
     private createDatabaseIfNeeded = async () => {
         try {
             await this.documentClient.createDatabaseAsync({
-                id: this.config.cosmosDB.database
+                id: process.env.COSMOS_DB_NAME
             });
         } catch (err) {
-            this.logger.info(`Database ${this.config.cosmosDB.database} already exists`);
+            console.log('error creating db')
+            //  this.logger.info(`Database ${process.env.COSMOS_OFFER_THROUGHPUT} already exists`);
         }
     }
 
@@ -46,12 +48,13 @@ export default class Cosmos {
             // Lazy indexing boosts the write performance and lowers RU charge of each insert
             // and is ideal for bulk ingestion scenarios for primarily read-heavy collections
             await this.documentClient.createCollectionAsync(this.databaseLink, {
-                id: this.config.cosmosDB.collection,
+                id: process.env.COSMOS_COLLECTION,
                 indexingPolicy: { indexingMode: "lazy" }
             },
-                { offerThroughput: this.config.cosmosDB.offerThroughput });
+                { offerThroughput: process.env.COSMOS_OFFER_THROUGHPUT });
         } catch (err) {
-            this.logger.info(`Collection ${this.config.cosmosDB.collection} already exists`);
+            console.log('error creating collection ' + err.status)
+            // this.logger.info(`Collection ${this.config.cosmosDB.collection} already exists`);
         }
 
         this.createStoredProcedureIfNeeded();
@@ -61,7 +64,8 @@ export default class Cosmos {
         try {
             await this.documentClient.deleteCollectionAsync(this.collectionLink);
         } catch (err) {
-            this.logger.info(`Collection ${this.config.cosmosDB.collection} does not exist`);
+            console.log('error deleting collection')
+            //this.logger.info(`Collection ${process.env.COSMOS_COLLECTION} does not exist`);
         }
     }
 
@@ -69,14 +73,15 @@ export default class Cosmos {
         try {
             await this.documentClient.createStoredProcedureAsync(this.collectionLink, BulkImportSproc);
         } catch (err) {
-            this.logger.info(`Sproc '${BulkImportSproc.id}' already exist`);
+            console.log('error creating stored proc')
+            //this.logger.info(`Sproc '${BulkImportSproc.id}' already exist`);
         }
     }
 
     bulkImport = async (docs: any[]) => {
         // This is to avoid unnecessary serialization of document batches in case of level "info"
-        if (this.logger.level === "debug")
-            this.logger.debug(JSON.stringify(docs));
+        // if (this.logger.level === "debug")
+        //     this.logger.debug(JSON.stringify(docs));
 
         const bulkImportSprocLink = `${this.collectionLink}/sprocs/${BulkImportSproc.id}`;
 
