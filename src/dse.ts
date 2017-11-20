@@ -27,4 +27,11 @@ export default class DSE {
 
     return verticies
   }
+
+  getRelationships = async(index: number) => {
+    const result = await this.client.executeGraph(`g.E().range(${index}, ${this.pageSize + index}).fold()`)
+    const edges = result.first()
+    
+    return edges
+  }
 }

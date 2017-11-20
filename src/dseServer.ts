@@ -29,7 +29,7 @@ const migrateData = async () => {
     await cosmos.createCollectionIfNeeded();
 
     await createVertexes();
-    // await createEdges();
+    await createEdges();
 };
 
 const handleRestart = async () => {
@@ -41,7 +41,7 @@ const handleRestart = async () => {
     }
 };
 
-const nodeIndexKey = `nodeIndex_${args.instance}`;
+//const nodeIndexKey = `nodeIndex_${args.instance}`;
 const createVertexes = async () => {
     // const indexString = await cache.get(nodeIndexKey);
     // let index = indexString ? Number.parseInt(indexString) : 0;
@@ -65,7 +65,7 @@ const createVertexes = async () => {
 };
 
 const toDocumentDBVertex = (node: any) => {
-    console.log('BEFORE \n' + JSON.stringify(node))
+    //console.log('BEFORE \n' + JSON.stringify(node))
 
     // TODO: investigate how to use node.id.community_id, node.id.member_id, and label
     // DSE id is combo of all three but Cosmos only has one id field
@@ -77,7 +77,7 @@ const toDocumentDBVertex = (node: any) => {
 
     addProperties(vertex, node.properties);
 
-    console.log('AFTER \n' + JSON.stringify(vertex))  
+    //console.log('AFTER \n' + JSON.stringify(vertex))  
     return vertex;
 };
 
@@ -87,6 +87,12 @@ const addProperties = (propertyBag: any, properties: any) => {
         // Some Neo4j datasets have "id" as a property in addition to node.id()
         // if (key.toLowerCase() === "id")
         //     continue;
+
+        // Edges have several values in DSE that we can ignore for Cosmos because they are represented a different way
+        const keyToLower = key.toLowerCase()
+        if (keyToLower === "type" || keyToLower === "inv" || keyToLower === "invlabel" || 
+            keyToLower === "outv" || keyToLower === "outvlabel")
+            continue;
 
         const propertyValues = properties[key];
         propertyBag[key] = [];
@@ -108,42 +114,49 @@ const addPropertyValue = (property: any[], propertyValue: any) => {
     });
 };
 
-// const relationshipIndexKey = `relationshipIndex_${args.instance}`;
-// const createEdges = async () => {
-//     const indexString = await cache.get(relationshipIndexKey);
-//     let index = indexString ? Number.parseInt(indexString) : 0;
-//     let relationships = [];
+//const relationshipIndexKey = `relationshipIndex_${args.instance}`;
+const createEdges = async () => {
+    //const indexString = await cache.get(relationshipIndexKey);
+    //let index = indexString ? Number.parseInt(indexString) : 0;
+    let index: number = 0;
+    let relationships: any = [];
 
-//     while (true) {
-//         logger.info(`Relationship: ${index}`);
+    while (true) {
+        // logger.info(`Relationship: ${index}`);
+        console.log(`Relationship: ${index}`);
 
-//         relationships = await neo.getRelationships(index);
-//         if (relationships.length === 0)
-//             break;
+        relationships = await dse.getRelationships(index);
+        if (relationships.length === 0)
+            break;
 
-//         const documentEdges = relationships.map((relationship: any) => toDocumentDBEdge(relationship));
-//         await cosmos.bulkImport(documentEdges);
+        const documentEdges = relationships.map((relationship: any) => toDocumentDBEdge(relationship));
+        await cosmos.bulkImport(documentEdges);
 
-//         index += config.pageSize;
-//         cache.set(relationshipIndexKey, index.toString());
-//     }
-// };
+        index += Number.parseInt(process.env.PAGE_SIZE);
+        // cache.set(relationshipIndexKey, index.toString());
+    }
+};
 
-// const toDocumentDBEdge = (relationship: any) => {
-//     const r: Neo4j.Relationship = relationship.r;
+const toDocumentDBEdge = (relationship: any) => {
+    //console.log('BEFORE \n' + JSON.stringify(relationship))
 
-//     const edge = {
-//         label: r.type,
-//         _isEdge: true,
-//         _vertexId: r.start.toString(10),
-//         _vertexLabel: relationship.a,
-//         _sink: r.end.toString(10),
-//         _sinkLabel: relationship.b
-//     };
+    // outV -> vertex and inV -> sink
+    const vertexId: String = relationship.outVLabel + relationship.outV.community_id + relationship.outV.member_id
+    const sinkId: String = relationship.inVLabel + relationship.inV.community_id + relationship.inV.member_id    
+    const edge = {
+        label: relationship.label,
+        _isEdge: true,
+        _vertexId: vertexId,
+        _vertexLabel: relationship.outVLabel,
+        _sink: sinkId,
+        _sinkLabel: relationship.inVLabel
+    };
 
-//     addProperties(edge, r.properties);
-//     return edge;
-// };
+    addProperties(edge, relationship.properties);
+
+    //console.log('AFTER \n' + JSON.stringify(edge))    
+    return edge;
+};
 
 migrateData().then(_ => console.log(`Migration completed for instance ${args.instance}`))
     .catch(error => {

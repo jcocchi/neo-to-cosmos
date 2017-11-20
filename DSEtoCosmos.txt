@@ -1,4 +1,4 @@
-// DSE EXAMPLE
+// DSE VERTEX EXAMPLE
 {
     "id":{      // Our id is just these three concatenated
         "~label":"label_name",
@@ -23,12 +23,55 @@
     }
 }
 
-// COSMOS TRANSFORMATION
+// COSMOS VERTEX TRANSFORMATION
 {
     "id":"label_name123456789001",
-    "label":"contact",
+    "label":"label_name",
     "prop_name":[{
         "id":"random guid",     // Should this be derived from the DSE prop id somehow like the document id or is a random guid acceptable?
         "_value":"prop_value"
     }]
+}
+
+
+// DSE EDGE EXAMPLE
+{
+    "id":{
+        "~label":"edge_label",
+        "~out_vertex":{
+            "~label":"out_vertex_label",
+            "community_id":out_vertex_community_id,
+            "member_id":out_vertex_member_id
+        },
+        "~in_vertex":{
+            "~label":"in_vertex_label",
+            "community_id":in_vertex_community_id,
+            "member_id":in_vertex_member_id
+        },
+        "~local_id":"random guid"
+    },
+    "label":"edge_label",
+    "type":"edge",
+    "inVLabel":"in_vertex_label",
+    "outVLabel":"out_vertex_label",
+    "inV":{
+        "~label":"in_vertex_label",
+        "community_id":in_vertex_community_id,
+        "member_id":in_vertex_member_id
+    },
+    "outV":{
+        "~label":"out_vertex_label",
+        "community_id":out_vertex_community_id,
+        "member_id":out_vertex_member_id
+    }
+}
+
+// COSMOS EDGE TRANSFORMATION
+{
+    "label":"edge_label",
+    "_isEdge":true,
+    "_vertexId":"out_vertex_label + out_vertex_community_id + out_vertex_member_id",        // This is how the vertex id is set up for the Cosmos transformation
+    "_vertexLabel":"out_vertex_label",
+    "_sink":"in_vertex_label + in_vertex_community_id + in_vertex_member_id",
+    "_sinkLabel":"in_vertex_label"
 }
