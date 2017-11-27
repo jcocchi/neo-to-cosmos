@@ -75,13 +75,13 @@ const toDocumentDBVertex = (node: any) => {
         label: node.label
     };
 
-    addProperties(vertex, node.properties);
+    addProperties(vertex, node.properties, false);
 
     //console.log('AFTER \n' + JSON.stringify(vertex))  
     return vertex;
 };
 
-const addProperties = (propertyBag: any, properties: any) => {
+const addProperties = (propertyBag: any, properties: any, isEdge: boolean) => {
     for (const key in properties) {
         // TODO: determine if we need this or not
         // Some Neo4j datasets have "id" as a property in addition to node.id()
@@ -95,13 +95,25 @@ const addProperties = (propertyBag: any, properties: any) => {
             continue;
 
         const propertyValues = properties[key];
-        propertyBag[key] = [];
+        // Cosmos stores vertex store property values as arrays and edge property values as regular strings
+        if (!isEdge) {
+            propertyBag[key] = [];   
+        }
 
         // Sometimes the value is itself an array
         if (Array.isArray(propertyValues)) {
-            for (const propertyValue of propertyValues)
+            for (const propertyValue of propertyValues) {
+                if(isEdge){
+                    propertyBag[key] = propertyValue
+                    continue;
+                }
                 addPropertyValue(propertyBag[key], propertyValue);
+            }
         } else {
+            if(isEdge){
+                propertyBag[key] = propertyValues
+                continue;
+            }
             addPropertyValue(propertyBag[key], propertyValues);
         }
     }
@@ -152,7 +164,7 @@ const toDocumentDBEdge = (relationship: any) => {
         _sinkLabel: relationship.inVLabel
     };
 
-    addProperties(edge, relationship.properties);
+    addProperties(edge, relationship.properties, true);
 
     //console.log('AFTER \n' + JSON.stringify(edge))    
     return edge;
