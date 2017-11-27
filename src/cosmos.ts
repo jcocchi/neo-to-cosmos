@@ -36,7 +36,7 @@ export default class Cosmos {
                 id: process.env.COSMOS_DB_NAME
             });
         } catch (err) {
-            //  this.logger.info(`Database ${process.env.COSMOS_OFFER_THROUGHPUT} already exists`);
+            this.logger.info(`Database ${process.env.COSMOS_OFFER_THROUGHPUT} already exists`);
         }
     }
 
@@ -52,7 +52,7 @@ export default class Cosmos {
             },
                 { offerThroughput: process.env.COSMOS_OFFER_THROUGHPUT });
         } catch (err) {
-            // this.logger.info(`Collection ${this.config.cosmosDB.collection} already exists`);
+            this.logger.info(`Collection ${this.config.cosmosDB.collection} already exists`);
         }
 
         this.createStoredProcedureIfNeeded();
@@ -62,7 +62,7 @@ export default class Cosmos {
         try {
             await this.documentClient.deleteCollectionAsync(this.collectionLink);
         } catch (err) {
-            //this.logger.info(`Collection ${process.env.COSMOS_COLLECTION} does not exist`);
+            this.logger.info(`Collection ${process.env.COSMOS_COLLECTION} does not exist`);
         }
     }
 
@@ -70,14 +70,14 @@ export default class Cosmos {
         try {
             await this.documentClient.createStoredProcedureAsync(this.collectionLink, BulkImportSproc);
         } catch (err) {
-            //this.logger.info(`Sproc '${BulkImportSproc.id}' already exist`);
+            this.logger.info(`Sproc '${BulkImportSproc.id}' already exist`);
         }
     }
 
     bulkImport = async (docs: any[]) => {
         // This is to avoid unnecessary serialization of document batches in case of level "info"
-        // if (this.logger.level === "debug")
-        //     this.logger.debug(JSON.stringify(docs));
+        if (this.logger.level === "debug")
+            this.logger.debug(JSON.stringify(docs));
 
         const bulkImportSprocLink = `${this.collectionLink}/sprocs/${BulkImportSproc.id}`;
 

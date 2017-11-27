@@ -1,8 +1,8 @@
 import * as Winston from "winston";
 
-export default (config: any) => {
+export default (logLevel: any) => {
     const logger = new (Winston.Logger)({
-        level: config.logLevel,
+        level: logLevel,
         transports: [
             new (Winston.transports.Console)({
                 timestamp: true,
@@ -19,6 +19,5 @@ export default (config: any) => {
         ]
     });
 
-    logger.info(config);
     return logger;
 };

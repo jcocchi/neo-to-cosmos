@@ -1,3 +1,4 @@
+require('dotenv').load()
 import Arguments from "./arguments";
 import { LoggerInstance } from "winston";
 import Logger from "./logger";
@@ -14,16 +15,14 @@ config.logLevel = config.logLevel || "info";
 config.pageSize = config.pageSize || 100;
 
 // Create Logger
-// const logger: LoggerInstance = Logger(config);
-// logger.info(args);
+const logger: LoggerInstance = Logger(process.env.LOG_LEVEL);
+logger.info(args);
 
-const cosmos = new Cosmos(config, null);
+const cosmos = new Cosmos(config, logger);
 const dse = new DSE(config);
 const cache = new Cache(config);
 
 const migrateData = async () => {
-    console.log('migrating data.....')
-
     await cosmos.initialize();
     // await handleRestart();
     await cosmos.createCollectionIfNeeded();
@@ -50,7 +49,7 @@ const createVertexes = async () => {
     let nodes: any = [];
 
     while (true) {
-        console.log(`Node: ${index}`);
+        logger.info(`Node: ${index}`);
 
         nodes = await dse.getNodes(index);
         if (nodes.length === 0)
@@ -131,8 +130,7 @@ const createEdges = async () => {
     let relationships: any = [];
 
     while (true) {
-        // logger.info(`Relationship: ${index}`);
-        console.log(`Relationship: ${index}`);
+        logger.info(`Relationship: ${index}`);
 
         relationships = await dse.getRelationships(index);
         if (relationships.length === 0)
@@ -164,8 +162,8 @@ const toDocumentDBEdge = (relationship: any) => {
     return edge;
 };
 
-migrateData().then(_ => console.log(`Migration completed for instance ${args.instance}`))
+migrateData().then(_ => logger.info(`Migration completed for instance ${args.instance}`))
     .catch(error => {
-        console.error(error);
+        logger.error(error);
         process.exit();
     });
