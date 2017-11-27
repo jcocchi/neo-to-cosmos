@@ -63,12 +63,16 @@
         "~label":"out_vertex_label",
         "community_id":out_vertex_community_id,
         "member_id":out_vertex_member_id
+    },
+    "properties":{
+        "propName":"propValue"
     }
 }
 
 // COSMOS EDGE TRANSFORMATION
 {
     "label":"edge_label",
+    "propName": "propValue",
     "_isEdge":true,
     "_vertexId":"out_vertex_label + out_vertex_community_id + out_vertex_member_id",        // This is how the vertex id is set up for the Cosmos transformation
     "_vertexLabel":"out_vertex_label",

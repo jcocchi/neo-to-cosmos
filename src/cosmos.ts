@@ -36,7 +36,6 @@ export default class Cosmos {
                 id: process.env.COSMOS_DB_NAME
             });
         } catch (err) {
-            console.log('error creating db')
             //  this.logger.info(`Database ${process.env.COSMOS_OFFER_THROUGHPUT} already exists`);
         }
     }
@@ -53,7 +52,6 @@ export default class Cosmos {
             },
                 { offerThroughput: process.env.COSMOS_OFFER_THROUGHPUT });
         } catch (err) {
-            console.log('error creating collection ' + err.status)
             // this.logger.info(`Collection ${this.config.cosmosDB.collection} already exists`);
         }
 
@@ -64,7 +62,6 @@ export default class Cosmos {
         try {
             await this.documentClient.deleteCollectionAsync(this.collectionLink);
         } catch (err) {
-            console.log('error deleting collection')
             //this.logger.info(`Collection ${process.env.COSMOS_COLLECTION} does not exist`);
         }
     }
@@ -73,7 +70,6 @@ export default class Cosmos {
         try {
             await this.documentClient.createStoredProcedureAsync(this.collectionLink, BulkImportSproc);
         } catch (err) {
-            console.log('error creating stored proc')
             //this.logger.info(`Sproc '${BulkImportSproc.id}' already exist`);
         }
     }

@@ -65,8 +65,6 @@ const createVertexes = async () => {
 };
 
 const toDocumentDBVertex = (node: any) => {
-    //console.log('BEFORE \n' + JSON.stringify(node))
-
     // TODO: investigate how to use node.id.community_id, node.id.member_id, and label
     // DSE id is combo of all three but Cosmos only has one id field
     const id: String = node.label + node.id.community_id + node.id.member_id
@@ -77,7 +75,6 @@ const toDocumentDBVertex = (node: any) => {
 
     addProperties(vertex, node.properties, false);
 
-    //console.log('AFTER \n' + JSON.stringify(vertex))  
     return vertex;
 };
 
@@ -150,8 +147,6 @@ const createEdges = async () => {
 };
 
 const toDocumentDBEdge = (relationship: any) => {
-    //console.log('BEFORE \n' + JSON.stringify(relationship))
-
     // outV -> vertex and inV -> sink
     const vertexId: String = relationship.outVLabel + relationship.outV.community_id + relationship.outV.member_id
     const sinkId: String = relationship.inVLabel + relationship.inV.community_id + relationship.inV.member_id    
@@ -166,7 +161,6 @@ const toDocumentDBEdge = (relationship: any) => {
 
     addProperties(edge, relationship.properties, true);
 
-    //console.log('AFTER \n' + JSON.stringify(edge))    
     return edge;
 };
 
