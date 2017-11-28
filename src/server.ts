@@ -15,7 +15,7 @@ config.logLevel = config.logLevel || "info";
 config.pageSize = config.pageSize || 100;
 
 // Create Logger
-const logger: LoggerInstance = Logger(config);
+const logger: LoggerInstance = Logger();
 logger.info(args);
 
 const cosmos = new Cosmos(config, logger);

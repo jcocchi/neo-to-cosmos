@@ -1,8 +1,19 @@
+require('dotenv').load()
 import * as Winston from "winston";
+import * as fs from "fs";
+import * as path from "path";
 
-export default (logLevel: any) => {
+export default () => {
+    const logFile: string = process.env.LOG_PATH_FROM_PROJ_ROOT 
+    const logDir: string = path.dirname(logFile)
+
+    // Create log file directory if it doesn't already exist
+    if (!fs.existsSync(logDir)){
+        fs.mkdirSync(logDir)
+    }
+
     const logger = new (Winston.Logger)({
-        level: logLevel,
+        level: process.env.LOG_LEVEL,
         transports: [
             new (Winston.transports.Console)({
                 timestamp: true,
@@ -14,7 +25,7 @@ export default (logLevel: any) => {
                 timestamp: true,
                 prettyPrint: true,
                 json: false,
-                filename: "logs/neo2cosmos.log"
+                filename: logFile
             })
         ]
     });
