@@ -2,12 +2,10 @@ require('dotenv').load()
 import { Client, ExecutionProfile, auth } from 'dse-driver'
 
 export default class DSE {
-  private readonly config: any;
   private readonly pageSize: number; 
   private client: any;
 
-  constructor(config: any) {
-    this.config = config
+  constructor() {
     this.pageSize = Number.parseInt(process.env.PAGE_SIZE) || 500
 
     // TODO: investigate where this should be created, once in the constructor or each time a query is executed

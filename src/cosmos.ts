@@ -5,7 +5,6 @@ import { promisifyAll } from "bluebird";
 import * as BulkImportSproc from "./bulkImport.js";
 
 export default class Cosmos {
-    private readonly config: any;
     private readonly logger: LoggerInstance;
 
     private readonly databaseLink: string;
@@ -14,8 +13,7 @@ export default class Cosmos {
     private readonly client: Client;
     private documentClient: any;
 
-    constructor(config: any, logger: LoggerInstance) {
-        this.config = config;
+    constructor(logger: LoggerInstance) {
         this.logger = logger;
 
         this.databaseLink = `dbs/${process.env.COSMOS_DB_NAME}`;
@@ -52,7 +50,7 @@ export default class Cosmos {
             },
                 { offerThroughput: process.env.COSMOS_OFFER_THROUGHPUT });
         } catch (err) {
-            this.logger.info(`Collection ${this.config.cosmosDB.collection} already exists`);
+            this.logger.info(`Collection ${process.env.COSMOS_COLLECTION} already exists`);
         }
 
         this.createStoredProcedureIfNeeded();

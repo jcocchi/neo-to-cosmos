@@ -1,25 +1,23 @@
+require('dotenv').load()
 import { ClientOpts, createClient } from "redis";
 import { promisifyAll } from "bluebird";
 
 export default class Cache {
-    private readonly config: any;
     private readonly redisClient: any;
 
-    constructor(config: any) {
-        this.config = config;
-
-        if (config.redis) {
+    constructor() {
+        if (process.env.REDIS !== undefined) {
             const redisOptions: ClientOpts = {
-                auth_pass: config.redis.pass
+                auth_pass: process.env.REDIS_PASS
             };
-            if (config.redis.ssl) {
+            if (process.env.REDIS_SSL) {
                 redisOptions.tls = {
-                    servername: config.redis.host
+                    servername: process.env.REDIS_HOST
                 };
             }
 
             this.redisClient = promisifyAll(createClient(
-                config.redis.port, config.redis.host, redisOptions));
+                Number.parseInt(process.env.REDIS_PORT), process.env.REDIS_HOST, redisOptions));
         }
     }
 
