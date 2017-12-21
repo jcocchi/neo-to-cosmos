@@ -34,7 +34,7 @@ export default class Cosmos {
                 id: process.env.COSMOS_DB_NAME
             });
         } catch (err) {
-            this.logger.info(`Database ${process.env.COSMOS_OFFER_THROUGHPUT} already exists`);
+            this.logger.info(`Database ${process.env.COSMOS_DB_NAME} already exists`);
         }
     }
 
