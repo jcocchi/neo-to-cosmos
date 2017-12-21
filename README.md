@@ -16,16 +16,16 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/create-graph-dotnet).
 You don't need to create a graph, because the app will do it for you.
 
 ## Configuration
-Before you run the app, you'll need to create `config.json` file. The config contains settings to your DSE and Cosmos DB databases, as well as an optional Redis cache to facilitate resume scenario.
+git Before you run the app, you'll need to create a `.env` file matching the schema of the existing `.env.sample` file. This contains settings to your DSE and Cosmos DB databases, as well as an optional Redis cache to facilitate resume scenario.
 
 ### Step 1: Get Your Cosmos DB Endpoint.
 <img src="images/azure-cosmos-keys.png"/>
 
-Select the Keys tab of your Cosmos DB account and you'll see the "URI". Copy that value to  `cosmosDb.endpoint`.
+Select the Keys tab of your Cosmos DB account and you'll see the "URI". Copy that value to  `COSMOS_ENDPOINT=`.
 
 ### Step 2: Get Your Cosmos DB AuthKey.
-Either primary or secondary key can be used as `cosmosDb.authKey`
-> Hint: Use the copy button. Its way easier than trying to select it with a mouse!!!
+Either primary or secondary key can be used as `COSMOS_KEY=`
+> Hint: Use the copy button. It's easier than trying to select it with a mouse.
 
 ### Step 3 (Optional): Set up a Redis Server
 Set up a local or remote Redis server and specify an optional `redis` value in the config. Redis allows us to resume an incomplete data migration without consuming Cosmos DB RUs. The fastest way to set up Redis is to use docker. 

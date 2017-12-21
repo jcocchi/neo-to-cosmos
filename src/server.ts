@@ -1,4 +1,4 @@
-require('dotenv').load()
+require("dotenv").load();
 import Arguments from "./arguments";
 import { LoggerInstance } from "winston";
 import Logger from "./logger";

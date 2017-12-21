@@ -1,4 +1,4 @@
-require('dotenv').load()
+require("dotenv").load();
 import { LoggerInstance } from "winston";
 import { v1 as Neo4j } from "neo4j-driver";
 

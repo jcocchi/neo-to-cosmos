@@ -46,9 +46,8 @@ cd /project
 npm install
 ```
 - Add a `.env` file to match the `.env.sample` file and fill in all of the values
-- Build the project 
+- Build and run the project
 ```terminal
-tsc
+npm start
 ```
-- Run the project from `dseServer.js`
 

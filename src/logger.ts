@@ -1,15 +1,15 @@
-require('dotenv').load()
+require("dotenv").load();
 import * as Winston from "winston";
 import * as fs from "fs";
 import * as path from "path";
 
 export default () => {
-    const logFile: string = process.env.LOG_PATH_FROM_PROJ_ROOT 
-    const logDir: string = path.dirname(logFile)
+    const logFile: string = process.env.LOG_PATH_FROM_PROJ_ROOT;
+    const logDir: string = path.dirname(logFile);
 
     // Create log file directory if it doesn't already exist
-    if (!fs.existsSync(logDir)){
-        fs.mkdirSync(logDir)
+    if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir);
     }
 
     const logger = new (Winston.Logger)({

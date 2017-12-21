@@ -1,4 +1,4 @@
-require('dotenv').load()
+require("dotenv").load();
 import { LoggerInstance } from "winston";
 import { Client } from "documentdb-typescript";
 import { promisifyAll } from "bluebird";
@@ -78,6 +78,7 @@ export default class Cosmos {
             this.logger.debug(JSON.stringify(docs));
 
         const bulkImportSprocLink = `${this.collectionLink}/sprocs/${BulkImportSproc.id}`;
+        this.logger.info(`Writing ${docs.length} documents to CosmosDB`);
 
         // Sprocs don't support array arguments so we have to wrap it in an object
         await this.documentClient.executeStoredProcedureAsync(bulkImportSprocLink, { docs });

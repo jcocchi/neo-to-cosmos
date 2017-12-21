@@ -1,4 +1,4 @@
-require('dotenv').load()
+require("dotenv").load();
 import { ClientOpts, createClient } from "redis";
 import { promisifyAll } from "bluebird";
 

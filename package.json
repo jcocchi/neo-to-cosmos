@@ -1,9 +1,9 @@
 {
   "name": "neo-to-cosmos",
   "version": "1.0.0",
-  "description": "Copy Neo4j data to Azure Cosmos DB",
+  "description": "Copy DSE data to Azure Cosmos DB",
   "scripts": {
-    "start": "npm run build && mkdirp logs && node dist/server.js",
+    "start": "npm run build && mkdirp logs && node dist/src/dseServer.js",
     "build": "tsc && tslint -c tslint.json -p tsconfig.json"
   },
   "author": "Syed Hassaan Ahmed",

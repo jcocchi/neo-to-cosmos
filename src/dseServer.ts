@@ -1,4 +1,4 @@
-require('dotenv').load()
+require("dotenv").load();
 import Arguments from "./arguments";
 import { LoggerInstance } from "winston";
 import Logger from "./logger";
@@ -15,9 +15,10 @@ logger.info(args);
 
 const cosmos = new Cosmos(logger);
 const dse = new DSE();
-const cache = new Cache();
 
 const migrateData = async () => {
+    logger.info("Beginning data migration");
+
     await cosmos.initialize();
     await handleRestart();
     await cosmos.createCollectionIfNeeded();
@@ -30,17 +31,12 @@ const handleRestart = async () => {
     if (args.restart) {
         await Promise.all([
             cosmos.deleteCollection(),
-            // cache.flush()
         ]);
     }
 };
 
-//const nodeIndexKey = `nodeIndex_${args.instance}`;
 const createVertexes = async () => {
-    // const indexString = await cache.get(nodeIndexKey);
-    // let index = indexString ? Number.parseInt(indexString) : 0;
     let index: number = 0;
-    // TODO: get type of DSE Node like Neo4j.Node[]
     let nodes: any = [];
 
     while (true) {
@@ -54,14 +50,11 @@ const createVertexes = async () => {
         await cosmos.bulkImport(documentVertices);
 
         index += Number.parseInt(process.env.PAGE_SIZE);
-        // cache.set(nodeIndexKey, index.toString());
     }
 };
 
 const toDocumentDBVertex = (node: any) => {
-    // TODO: investigate how to use node.id.community_id, node.id.member_id, and label
-    // DSE id is combo of all three but Cosmos only has one id field
-    const id: String = node.label + node.id.community_id + node.id.member_id
+    const id: String = node.label + node.id.community_id + node.id.member_id;
     const vertex = {
         id: id,
         label: node.label
@@ -74,35 +67,30 @@ const toDocumentDBVertex = (node: any) => {
 
 const addProperties = (propertyBag: any, properties: any, isEdge: boolean) => {
     for (const key in properties) {
-        // TODO: determine if we need this or not
-        // Some Neo4j datasets have "id" as a property in addition to node.id()
-        // if (key.toLowerCase() === "id")
-        //     continue;
-
         // Edges have several values in DSE that we can ignore for Cosmos because they are represented a different way
-        const keyToLower = key.toLowerCase()
-        if (keyToLower === "type" || keyToLower === "inv" || keyToLower === "invlabel" || 
-            keyToLower === "outv" || keyToLower === "outvlabel")
+        const keyToLower = key.toLowerCase();
+        if (keyToLower === "id" || keyToLower === "type" || keyToLower === "inv" ||
+            keyToLower === "invlabel" || keyToLower === "outv" || keyToLower === "outvlabel")
             continue;
 
         const propertyValues = properties[key];
         // Cosmos stores vertex store property values as arrays and edge property values as regular strings
         if (!isEdge) {
-            propertyBag[key] = [];   
+            propertyBag[key] = [];
         }
 
         // Sometimes the value is itself an array
         if (Array.isArray(propertyValues)) {
             for (const propertyValue of propertyValues) {
-                if(isEdge){
-                    propertyBag[key] = propertyValue
+                if (isEdge) {
+                    propertyBag[key] = propertyValue;
                     continue;
                 }
                 addPropertyValue(propertyBag[key], propertyValue);
             }
         } else {
-            if(isEdge){
-                propertyBag[key] = propertyValues
+            if (isEdge) {
+                propertyBag[key] = propertyValues;
                 continue;
             }
             addPropertyValue(propertyBag[key], propertyValues);
@@ -117,15 +105,12 @@ const addPropertyValue = (property: any[], propertyValue: any) => {
     });
 };
 
-//const relationshipIndexKey = `relationshipIndex_${args.instance}`;
 const createEdges = async () => {
-    //const indexString = await cache.get(relationshipIndexKey);
-    //let index = indexString ? Number.parseInt(indexString) : 0;
     let index: number = 0;
     let relationships: any = [];
 
     while (true) {
-        logger.info(`Relationship: ${index}`);
+        logger.info(`Edge Index: ${index}`);
 
         relationships = await dse.getRelationships(index);
         if (relationships.length === 0)
@@ -135,14 +120,13 @@ const createEdges = async () => {
         await cosmos.bulkImport(documentEdges);
 
         index += Number.parseInt(process.env.PAGE_SIZE);
-        // cache.set(relationshipIndexKey, index.toString());
     }
 };
 
 const toDocumentDBEdge = (relationship: any) => {
     // outV -> vertex and inV -> sink
-    const vertexId: String = relationship.outVLabel + relationship.outV.community_id + relationship.outV.member_id
-    const sinkId: String = relationship.inVLabel + relationship.inV.community_id + relationship.inV.member_id    
+    const vertexId: String = relationship.outVLabel + relationship.outV.community_id + relationship.outV.member_id;
+    const sinkId: String = relationship.inVLabel + relationship.inV.community_id + relationship.inV.member_id;
     const edge = {
         label: relationship.label,
         _isEdge: true,
@@ -157,7 +141,11 @@ const toDocumentDBEdge = (relationship: any) => {
     return edge;
 };
 
-migrateData().then(_ => logger.info(`Migration completed for instance ${args.instance}`))
+migrateData()
+    .then(_ => {
+        logger.info(`Migration completed for graph ${process.env.DSE_GRAPH}`);
+        process.exit();
+    })
     .catch(error => {
         logger.error(error);
         process.exit();
