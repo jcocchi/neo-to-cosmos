@@ -1,4 +1,4 @@
-# dse-to-cosmos
+# DSE Graph to CosmosDB Migration Tool
 
 This app takes a DSE Graph database snapshot and copies all contents to an Azure Cosmos DB Graph database.
 
@@ -16,7 +16,23 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/create-graph-dotnet).
 You don't need to create a graph, because the app will do it for you.
 
 ## Configuration
-git Before you run the app, you'll need to create a `.env` file matching the schema of the existing `.env.sample` file. This contains settings to your DSE and Cosmos DB databases, as well as an optional Redis cache to facilitate resume scenario.
+Before you run the app, you'll need to create a `.env` file matching the schema of the existing `.env.sample` file. This contains settings to your DSE and Cosmos DB databases.
+
+```javascript
+DSE_HOST=   // IP of your DSE instance
+DSE_GRAPH=  // DSE Graph name
+
+COSMOS_KEY=                 // Auth key for Cosmos (step 2 below)
+COMSOS_DB_NAME=             // Pick a name for your Cosmos database
+COSMOS_ENDPOINT=            // Cosmos endpoint url (step 1 below)
+COSMOS_COLLECTION=          // Pick a name for your Cosmos collection
+COSMOS_OFFER_THROUGHPUT=    // Cosmos throughput, check here for guidance https://docs.microsoft.com/en-us/azure/cosmos-db/request-units#estimating-throughput-needs
+
+PAGE_SIZE=  // How many documents you will bulk load to Cosmos at a time. Suggested to start at 500 and adjust as needed
+
+LOG_LEVEL=                  // Project only has info level logs currently
+LOG_PATH_FROM_PROJ_ROOT=    // Suggested value of logs/dse2cosmos.log, this folder and file will be created for you if it doesn't already exist 
+```
 
 ### Step 1: Get Your Cosmos DB Endpoint.
 <img src="images/azure-cosmos-keys.png"/>
@@ -26,12 +42,6 @@ Select the Keys tab of your Cosmos DB account and you'll see the "URI". Copy tha
 ### Step 2: Get Your Cosmos DB AuthKey.
 Either primary or secondary key can be used as `COSMOS_KEY=`
 > Hint: Use the copy button. It's easier than trying to select it with a mouse.
-
-### Step 3 (Optional): Set up a Redis Server
-Set up a local or remote Redis server and specify an optional `redis` value in the config. Redis allows us to resume an incomplete data migration without consuming Cosmos DB RUs. The fastest way to set up Redis is to use docker. 
-```
-docker run --name dse2cosmos-redis -p 6379:6379 -d redis
-```
 
 ## Run the tool
 `npm start` and watch your data being copied. If for some reason you couldn't transfer the data completely, simply rerun the command. For fresh clean start, do `npm start -- -r`.
