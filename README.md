@@ -34,7 +34,7 @@ LOG_PATH_FROM_PROJ_ROOT=    // Suggested value of logs/dse2cosmos.log, this fold
 ### Step 1: Get Your Cosmos DB Endpoint.
 Select the Keys tab of your Cosmos DB account and you'll see the "URI". Copy that value to  `COSMOS_ENDPOINT=`.
 
-<img src="images/azure-cosmos-keys.png"/>
+<img src="https://raw.githubusercontent.com/jcocchi/neo-to-cosmos/master/images/azure-cosmos-keys.png"/>
 
 ### Step 2: Get Your Cosmos DB AuthKey.
 Either primary or secondary key can be used as `COSMOS_KEY=`
@@ -46,11 +46,11 @@ Either primary or secondary key can be used as `COSMOS_KEY=`
 ## Verify Gremlin Queries Against Cosmos in the Portal
 To execute Gremlin queries on your new CosmosDB Graph and visualize traversals, log back in to the Azure Portal and select the "Data Explorer" blade in your CosmosDB Graph instance. 
 
-<img src="images/graph-portal.png">
+<img src="https://raw.githubusercontent.com/jcocchi/neo-to-cosmos/master/images/graph-portal.png">
 
 Enter a Gremlin query in the text box to vizualize your graph and verify it was ported correctly.
 
-<img src="images/graph-traversal.png">
+<img src="https://raw.githubusercontent.com/jcocchi/neo-to-cosmos/master/images/graph-traversal.PNG">
 
 ## Disclaimer
 - The app is **NOT intended to run on a live production database**.
