@@ -19,7 +19,7 @@ Now that we are inside of the container, open the Gremlin console.
 ```terminal
 dse gremlin-console
 ```
-<img src="https://raw.githubusercontent.com/jcocchi/neo-to-cosmos/master/images/gremlin-console.png">
+<img src="images/gremlin-console.png">
 
 Now you are ready to create your sample graph. Follow [this](https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/graph/using/QuickStartGremlin.html) documentation from DataStax. You can start at step 4 as we have already started the Gremlin console for your DSE instance. At a minimum, follow the tutorial long enough to add some verticies and edges to your graph, but it is not necessary to follow the entire tutorial.
 

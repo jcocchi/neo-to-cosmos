@@ -34,7 +34,7 @@ LOG_PATH_FROM_PROJ_ROOT=    // Suggested value of logs/dse2cosmos.log, this fold
 ### Step 1: Get Your Cosmos DB Endpoint.
 Select the Keys tab of your Cosmos DB account and you'll see the "URI". Copy that value to  `COSMOS_ENDPOINT=`.
 
-<img src="https://raw.githubusercontent.com/jcocchi/neo-to-cosmos/master/images/azure-cosmos-keys.png"/>
+<img src="images/azure-cosmos-keys.png"/>
 
 ### Step 2: Get Your Cosmos DB AuthKey.
 Either primary or secondary key can be used as `COSMOS_KEY=`
@@ -48,14 +48,16 @@ npm install
 npm start
 ```
 
+<img src="images/run-project.gif">
+
 ## Verify Gremlin Queries Against Cosmos in the Portal
 To execute Gremlin queries on your new CosmosDB Graph and visualize traversals, log back in to the Azure Portal and select the "Data Explorer" blade in your CosmosDB Graph instance. 
 
-<img src="https://raw.githubusercontent.com/jcocchi/neo-to-cosmos/master/images/graph-portal.png">
+<img src="images/graph-portal.png">
 
-Enter a Gremlin query in the text box to vizualize your graph and verify it was ported correctly.
+Enter a Gremlin query in the text box to vizualize your graph and verify it was ported correctly. The queries from the GIF below are based off of the sample graph from step 23 of [this article](https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/graph/using/QuickStartGremlin.html).
 
-<img src="https://raw.githubusercontent.com/jcocchi/neo-to-cosmos/master/images/graph-traversal.PNG">
+<img src="images/graph-traversal.gif">
 
 ## Disclaimer
 - The app is **NOT intended to run on a live production database**.
