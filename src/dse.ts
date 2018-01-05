@@ -1,5 +1,5 @@
 require("dotenv").load();
-import { Client, ExecutionProfile, auth } from "dse-driver";
+const dse = require("dse-driver");
 
 export default class DSE {
   private readonly pageSize: number;
@@ -9,11 +9,11 @@ export default class DSE {
     this.pageSize = Number.parseInt(process.env.PAGE_SIZE) || 500;
 
     // TODO: Investigate Authentication
-    this.client = new Client({
+    this.client = new dse.Client({
       contactPoints: [process.env.DSE_HOST],
-      authProvider: new auth.DseGssapiAuthProvider(),
+      authProvider: new dse.auth.DseGssapiAuthProvider(),
       profiles: [
-        new ExecutionProfile("default", {
+        new dse.ExecutionProfile("default", {
           graphOptions: { name: process.env.DSE_GRAPH }
         })
     ]});

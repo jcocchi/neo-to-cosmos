@@ -41,7 +41,12 @@ Either primary or secondary key can be used as `COSMOS_KEY=`
 > Hint: Use the copy button. It's easier than trying to select it with a mouse.
 
 ## Run the Tool
-`npm start` and watch your data being copied. If for some reason you couldn't transfer the data completely, simply rerun the command. For fresh clean start, do `npm start -- -r`.
+Run the below terminal commands and watch your data being copied. If for some reason you couldn't transfer the data completely, simply rerun the command. For fresh clean start, do `npm start -- -r`.
+
+```terminal
+npm install
+npm start
+```
 
 ## Verify Gremlin Queries Against Cosmos in the Portal
 To execute Gremlin queries on your new CosmosDB Graph and visualize traversals, log back in to the Azure Portal and select the "Data Explorer" blade in your CosmosDB Graph instance. 

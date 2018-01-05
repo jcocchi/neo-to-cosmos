@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Copy DSE data to Azure Cosmos DB",
   "scripts": {
-    "start": "npm run build && mkdirp logs && node dist/src/dseServer.js",
-    "build": "tsc && tslint -c tslint.json -p tsconfig.json"
+    "start": "npm run build && node dist/dseServer.js",
+    "build": "tslint src/**/*.ts && tsc "
   },
   "author": "Syed Hassaan Ahmed",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "url": "https://github.com/syedhassaanahmed/neo-to-cosmos"
   },
   "dependencies": {
-    "@types/dotenv": "^4.0.0",
+    "dotenv": "^4.0.0",
     "@types/node": "^8.0.53",
     "argparse": "^1.0.9",
     "bluebird": "^3.5.1",
