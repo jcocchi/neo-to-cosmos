@@ -1,4 +1,5 @@
 require("dotenv").load();
+// TODO: fix this for typescript style
 const dse = require("dse-driver");
 
 export default class DSE {
@@ -8,7 +9,6 @@ export default class DSE {
   constructor() {
     this.pageSize = Number.parseInt(process.env.PAGE_SIZE) || 500;
 
-    // TODO: Investigate Authentication
     this.client = new dse.Client({
       contactPoints: [process.env.DSE_HOST],
       authProvider: new dse.auth.DseGssapiAuthProvider(),
@@ -19,14 +19,14 @@ export default class DSE {
     ]});
   }
 
-  getNodes = async(index: number) => {
+  getVertices = async(index: number) => {
     const result = await this.client.executeGraph(`g.V().range(${index}, ${this.pageSize + index}).fold()`);
     const verticies = result.first();
 
     return verticies;
   }
 
-  getRelationships = async(index: number) => {
+  getEdges = async(index: number) => {
     const result = await this.client.executeGraph(`g.E().range(${index}, ${this.pageSize + index}).fold()`);
     const edges = result.first();
 

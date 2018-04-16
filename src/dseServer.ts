@@ -23,7 +23,7 @@ const migrateData = async () => {
     await handleRestart();
     await cosmos.createCollectionIfNeeded();
 
-    await createVertexes();
+    await createVertices();
     await createEdges();
 };
 
@@ -35,18 +35,18 @@ const handleRestart = async () => {
     }
 };
 
-const createVertexes = async () => {
+const createVertices = async () => {
     let index: number = 0;
-    let nodes: any = [];
+    let vertices: any = [];
 
     while (true) {
-        logger.info(`Node: ${index}`);
+        logger.info(`Vertex: ${index}`);
 
-        nodes = await dse.getNodes(index);
-        if (nodes.length === 0)
+        vertices = await dse.getVertices(index);
+        if (vertices.length === 0)
             break;
 
-        const documentVertices = nodes.map((node: any) => toDocumentDBVertex(node));
+        const documentVertices = vertices.map((vertex: any) => toDocumentDBVertex(vertex));
         await cosmos.bulkImport(documentVertices);
 
         index += Number.parseInt(process.env.PAGE_SIZE);
@@ -112,7 +112,7 @@ const createEdges = async () => {
     while (true) {
         logger.info(`Edge Index: ${index}`);
 
-        relationships = await dse.getRelationships(index);
+        relationships = await dse.getEdges(index);
         if (relationships.length === 0)
             break;
 
@@ -139,6 +139,14 @@ const toDocumentDBEdge = (relationship: any) => {
     addProperties(edge, relationship.properties, true);
 
     return edge;
+};
+
+const handleRestart = async () => {
+    if (args.restart) {
+        await Promise.all([
+            cosmos.deleteCollection(),
+        ]);
+    }
 };
 
 migrateData()

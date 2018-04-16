@@ -57,7 +57,8 @@ const createVertexes = async () => {
     }
 };
 
-const toDocumentDBVertex = (node: Neo4j.Node) => {
+// const toDocumentDBVertex = (node: INode) => {  // each interface will map their own nodes before getting here    
+const toDocumentDBVertex = (node: Neo4j.Node) => {  // each interface will map their own nodes before getting here
     const vertex = {
         id: node.identity.toString(10),
         label: node.labels[0]
