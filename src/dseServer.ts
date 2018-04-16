@@ -27,14 +27,6 @@ const migrateData = async () => {
     await createEdges();
 };
 
-const handleRestart = async () => {
-    if (args.restart) {
-        await Promise.all([
-            cosmos.deleteCollection(),
-        ]);
-    }
-};
-
 const createVertices = async () => {
     let index: number = 0;
     let vertices: any = [];
