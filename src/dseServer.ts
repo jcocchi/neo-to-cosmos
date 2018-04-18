@@ -3,8 +3,9 @@ import Arguments from "./arguments";
 import { LoggerInstance } from "winston";
 import Logger from "./logger";
 import Cosmos from "./cosmos";
-import DSE from "./dse";
+import DSE from "./providers/dse";
 import Cache from "./cache";
+import IVertex from "./interfaces/vertex";
 import { v4 as Uuid } from "uuid";
 
 const args = Arguments();
@@ -19,40 +20,50 @@ const dse = new DSE();
 const migrateData = async () => {
     logger.info("Beginning data migration");
 
+    // Decide which version to run
+    const type: string = process.env.DATABASE_SOURCE_TYPE;
+
     await cosmos.initialize();
     await handleRestart();
     await cosmos.createCollectionIfNeeded();
 
-    await createVertices();
-    await createEdges();
+    if (type === "DSE" || type === "Neo4j") {
+        await createVertices(type);
+        await createEdges(type);
+    }
 };
 
-const createVertices = async () => {
+const createVertices = async (type: string) => {
     let index: number = 0;
-    let vertices: any = [];
+    let vertices: IVertex[] = [];
 
     while (true) {
         logger.info(`Vertex: ${index}`);
 
-        vertices = await dse.getVertices(index);
+        if (type === "DSE") {
+            vertices = await dse.getVertices(index);
+        } else if (type === "Neo4j") {
+            // TODO: ADD NEO4J
+        }
+
         if (vertices.length === 0)
             break;
 
-        const documentVertices = vertices.map((vertex: any) => toDocumentDBVertex(vertex));
+        const documentVertices = vertices.map((vertex: IVertex) => toDocumentDBVertex(vertex));
         await cosmos.bulkImport(documentVertices);
 
         index += Number.parseInt(process.env.PAGE_SIZE);
     }
 };
 
-const toDocumentDBVertex = (node: any) => {
-    const id: String = node.label + node.id.community_id + node.id.member_id;
-    const vertex = {
-        id: id,
-        label: node.label
-    };
+const toDocumentDBVertex = (vertex: IVertex) => {
+    // const id: String = node.label + node.id.community_id + node.id.member_id;
+    // const vertex = {
+    //     id: id,
+    //     label: node.label
+    // };
 
-    addProperties(vertex, node.properties, false);
+    addProperties(vertex, vertex.properties, false);
 
     return vertex;
 };
@@ -97,7 +108,7 @@ const addPropertyValue = (property: any[], propertyValue: any) => {
     });
 };
 
-const createEdges = async () => {
+const createEdges = async (type: string) => {
     let index: number = 0;
     let relationships: any = [];
 

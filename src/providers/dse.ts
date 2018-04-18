@@ -1,6 +1,6 @@
 require("dotenv").load();
-// TODO: fix this for typescript style
 const dse = require("dse-driver");
+import IVertex from "../interfaces/vertex";
 
 export default class DSE {
   private readonly pageSize: number;
@@ -19,9 +19,20 @@ export default class DSE {
     ]});
   }
 
-  getVertices = async(index: number) => {
+  getVertices = async(index: number): Promise<IVertex[]> => {
     const result = await this.client.executeGraph(`g.V().range(${index}, ${this.pageSize + index}).fold()`);
     const verticies = result.first();
+
+    verticies.map((vertex: any) => {
+      const id: String = vertex.label + vertex.id.community_id + vertex.id.member_id;
+      const v = {
+          id: id,
+          label: vertex.label,
+          properties: vertex.properties
+      };
+
+      return v;
+    });
 
     return verticies;
   }

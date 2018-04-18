@@ -4,7 +4,7 @@ import { LoggerInstance } from "winston";
 import Logger from "./logger";
 import Cosmos from "./cosmos";
 import { v1 as Neo4j } from "neo4j-driver";
-import Neo from "./neo";
+import Neo from "./providers/neo";
 import Cache from "./cache";
 import { v4 as Uuid } from "uuid";
 
@@ -57,7 +57,7 @@ const createVertexes = async () => {
     }
 };
 
-// const toDocumentDBVertex = (node: INode) => {  // each interface will map their own nodes before getting here    
+// const toDocumentDBVertex = (node: INode) => {  // each interface will map their own nodes before getting here
 const toDocumentDBVertex = (node: Neo4j.Node) => {  // each interface will map their own nodes before getting here
     const vertex = {
         id: node.identity.toString(10),

@@ -53,7 +53,7 @@ export default class Cosmos {
             this.logger.info(`Collection ${process.env.COSMOS_COLLECTION} already exists`);
         }
 
-        this.createStoredProcedureIfNeeded();
+        await this.createStoredProcedureIfNeeded();
     }
 
     deleteCollection = async () => {
